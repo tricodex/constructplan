@@ -51,6 +51,7 @@ export default function LandingPage() {
                 <br />
               </h2>
               <p className="text-xl text-gray-600 max-w-lg">
+                <strong>Time is a construct, but you can save it. </strong>Handle construction projects with <strong>intelligent planning</strong>. We leverage <strong>AI</strong> to <strong>streamline preparation</strong>, create <strong>timelines</strong>, and <strong>solve problems</strong>. <strong>Manage teams</strong>, <strong>equipment</strong>, <strong>and budget</strong>—all in one platform designed to <strong>minimize delays</strong> and <strong>optimize</strong> every project’s potential.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link 

@@ -1,17 +1,23 @@
+// src/app/layout.tsx
 import type { Metadata } from "next";
-import { Kanit } from "next/font/google";
+import localFont from "next/font/local";
+import { Toaster } from "@/components/ui/toaster";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
 import "./globals.css";
 
-const kanit = Kanit({ 
-  subsets: ['latin'],
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
-  variable: '--font-kanit',
+const geistSans = localFont({
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
 });
 
 export const metadata: Metadata = {
   title: 'constructplan | AI-Powered Construction Planning',
   description: 'Transform your construction planning with AI-powered insights and automation',
   keywords: 'construction, planning, AI, project management, automation',
+  authors: [{ name: 'constructplan' }],
+  viewport: 'width=device-width, initial-scale=1',
 };
 
 export default function RootLayout({
@@ -19,10 +25,22 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 60 * 1000,
+        refetchOnWindowFocus: false,
+      },
+    },
+  }));
+
   return (
-    <html lang="en">
-      <body className={`${kanit.variable} font-sans antialiased`}>
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.className} antialiased`}>
+        <QueryClientProvider client={queryClient}>
+          {children}
+          <Toaster />
+        </QueryClientProvider>
       </body>
     </html>
   );
