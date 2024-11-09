@@ -1,7 +1,21 @@
+// src/middleware.ts
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  const requestUrl = new URL(request.url)
+
+  // Skip middleware for public routes and static files
+  if (
+    requestUrl.pathname === '/' ||
+    requestUrl.pathname === '/login' ||
+    requestUrl.pathname === '/signup' ||
+    requestUrl.pathname.startsWith('/auth/') ||
+    requestUrl.pathname.match(/\.(ico|png|jpg|jpeg|svg|css|js)$/)
+  ) {
+    return NextResponse.next()
+  }
+
   const response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -13,30 +27,26 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
+        get: async (name: string) => {
+          const cookieStore = await request.cookies
+          return cookieStore.get(name)?.value
         },
-        set(name: string, value: string, options: CookieOptions) {
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          })
+        set: async (name: string, value: string, options: CookieOptions) => {
+          const cookieStore = await response.cookies
+          cookieStore.set(name, value, options)
         },
-        remove(name: string, options: CookieOptions) {
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
+        remove: async (name: string) => {
+          const cookieStore = await response.cookies
+          cookieStore.delete(name)
         },
       },
     }
   )
 
-  const { data: { session } } = await supabase.auth.getSession()
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
 
-  // Protected routes
   if (!session && request.nextUrl.pathname.startsWith('/dashboard')) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
@@ -46,6 +56,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

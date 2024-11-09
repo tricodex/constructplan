@@ -24,7 +24,7 @@ export function useAuth(): UseAuthReturn {
     try {
       setLoading(true)
       setError(null)
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error } = await (await supabase).auth.signInWithPassword({
         email,
         password,
       })
@@ -41,7 +41,7 @@ export function useAuth(): UseAuthReturn {
     try {
       setLoading(true)
       setError(null)
-      const { error } = await supabase.auth.signUp({
+      const { error } = await (await supabase).auth.signUp({
         email,
         password,
         options: {
@@ -60,7 +60,7 @@ export function useAuth(): UseAuthReturn {
   const signOut = async () => {
     try {
       setLoading(true)
-      const { error } = await supabase.auth.signOut()
+      const { error } = await (await supabase).auth.signOut()
       if (error) throw error
       router.push('/login')
     } catch (e) {

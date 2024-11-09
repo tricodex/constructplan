@@ -1,5 +1,5 @@
 // src/services/api.ts
-import { createClient } from '@/lib/supabase/config'
+import { createClient } from '@/lib/supabase/server'
 import type { Database } from '@/lib/supabase/database.types'
 import { TABLES } from '@/lib/supabase/schema'
 import type { Json } from '@/lib/supabase/database.types'
@@ -10,7 +10,7 @@ export const api = {
   projects: {
     async getAll() {
       const supabase = createClient()
-      return supabase
+      return (await supabase)
         .from(TABLES.PROJECTS)
         .select(`
           *,
@@ -32,7 +32,7 @@ export const api = {
 
     async getById(id: string) {
       const supabase = createClient()
-      return supabase
+      return (await supabase)
         .from(TABLES.PROJECTS)
         .select(`
           *,
@@ -48,7 +48,7 @@ export const api = {
 
     async create(data: Tables['projects']['Insert']) {
       const supabase = createClient()
-      return supabase
+      return (await supabase)
         .from(TABLES.PROJECTS)
         .insert(data)
         .select()
@@ -59,7 +59,7 @@ export const api = {
   tasks: {
     async getByProject(projectId: string) {
       const supabase = createClient()
-      return supabase
+      return (await supabase)
         .from(TABLES.TASKS)
         .select(`
           *,
@@ -72,7 +72,7 @@ export const api = {
 
     async create(data: Tables['tasks']['Insert']) {
       const supabase = createClient()
-      return supabase
+      return (await supabase)
         .from(TABLES.TASKS)
         .insert(data)
         .select()
@@ -88,7 +88,7 @@ export const api = {
         timestamp: new Date().toISOString(),
       }
       
-      return supabase
+      return (await supabase)
         .from(TABLES.PHOTO_ANALYSES)
         .insert({
           project_id: projectId,

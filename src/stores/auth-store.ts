@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { createClient } from '@/lib/supabase/config'
+import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import type { Database } from '@/lib/supabase/database.types'
 
@@ -26,12 +26,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   checkUser: async () => {
     try {
       const supabase = createClient()
-      const { data: { user }, error } = await supabase.auth.getUser()
+      const { data: { user }, error } = await (await supabase).auth.getUser()
       
       if (error) throw error
       
       if (user) {
-        const { data: profile } = await supabase
+        const { data: profile } = await (await supabase)
           .from('profiles')
           .select('*')
           .eq('id', user.id)
@@ -51,7 +51,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: true, error: null })
       const supabase = createClient()
       
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error } = await (await supabase).auth.signInWithPassword({
         email,
         password
       })
@@ -69,7 +69,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: true, error: null })
       const supabase = createClient()
       
-      const { error } = await supabase.auth.signUp({
+      const { error } = await (await supabase).auth.signUp({
         email,
         password,
         options: {
@@ -87,7 +87,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   
   signOut: async () => {
     const supabase = createClient()
-    await supabase.auth.signOut()
+    await (await supabase).auth.signOut()
     set({ user: null, profile: null })
   },
   
@@ -96,7 +96,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: true, error: null })
       const supabase = createClient()
       
-      const { error } = await supabase
+      const { error } = await (await supabase)
         .from('profiles')
         .update(data)
         .eq('id', get().user?.id ?? '')
