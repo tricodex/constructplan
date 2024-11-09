@@ -72,21 +72,21 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
 }
 
 // could use at somepoint
-export function DashboardLoading() {
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary" />
-    </div>
-  );
-}
+// export function DashboardLoading() {
+//   return (
+//     <div className="flex min-h-screen items-center justify-center">
+//       <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary" />
+//     </div>
+//   );
+// }
 
-export function DashboardError() {
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-destructive">Error Loading Dashboard</h1>
-        <p className="text-muted-foreground mt-2">Please try refreshing the page</p>
-      </div>
-    </div>
-  );
-}
+// export function DashboardError() {
+//   return (
+//     <div className="flex min-h-screen items-center justify-center">
+//       <div className="text-center">
+//         <h1 className="text-2xl font-bold text-destructive">Error Loading Dashboard</h1>
+//         <p className="text-muted-foreground mt-2">Please try refreshing the page</p>
+//       </div>
+//     </div>
+//   );
+// }

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,17 +17,17 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export default function LoginPage() {
+function LoginPageComponent() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
-  
+
   // Handle error and success messages from redirects
   useEffect(() => {
-    const error = searchParams.get('error');
-    const message = searchParams.get('message');
-    
+    const error = searchParams.get("error");
+    const message = searchParams.get("message");
+
     if (error) {
       toast({
         title: "Error",
@@ -35,7 +35,7 @@ export default function LoginPage() {
         variant: "destructive",
       });
     }
-    
+
     if (message) {
       toast({
         title: "Success",
@@ -46,36 +46,39 @@ export default function LoginPage() {
 
   const handleAuth = async (
     event: React.FormEvent<HTMLFormElement>,
-    type: 'login' | 'signup'
+    type: "login" | "signup"
   ) => {
     event.preventDefault();
     setIsLoading(true);
-    
+
     try {
       const formData = new FormData(event.currentTarget);
-      const email = formData.get('email') as string;
-      const password = formData.get('password') as string;
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
 
       // Admin bypass (for development only)
-      if (email === 'admin' && password === 'admin') {
-        router.push('/dashboard');
+      if (email === "admin" && password === "admin") {
+        router.push("/dashboard");
         return;
       }
 
       // Submit to the appropriate API route
-      const response = await fetch(`/api/auth/${type === 'login' ? 'sign-in' : 'sign-up'}`, {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await fetch(
+        `/api/auth/${type === "login" ? "sign-in" : "sign-up"}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       if (!response.ok) {
         const error = await response.text();
-        throw new Error(error || 'Authentication failed');
+        throw new Error(error || "Authentication failed");
       }
 
       // Handle successful response
-      if (type === 'login') {
-        router.push('/dashboard');
+      if (type === "login") {
+        router.push("/dashboard");
       } else {
         toast({
           title: "Success",
@@ -130,7 +133,7 @@ export default function LoginPage() {
                   Enter your credentials to access your account
                 </CardDescription>
               </CardHeader>
-              <form onSubmit={(e) => handleAuth(e, 'login')}>
+              <form onSubmit={(e) => handleAuth(e, "login")}>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="email-login">Email</Label>
@@ -178,7 +181,7 @@ export default function LoginPage() {
                   Enter your details to create your account
                 </CardDescription>
               </CardHeader>
-              <form onSubmit={(e) => handleAuth(e, 'signup')}>
+              <form onSubmit={(e) => handleAuth(e, "signup")}>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="email-signup">Email</Label>
@@ -220,5 +223,13 @@ export default function LoginPage() {
         </Tabs>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginPageComponent />
+    </Suspense>
   );
 }
